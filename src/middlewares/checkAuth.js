@@ -11,7 +11,7 @@ async function checkAuth(req , res , next){
             return
         }
 
-        let decode = await jwt.verify(token , process.env.JWT_SECRET);
+        let decode =  jwt.verify(token , process.env.JWT_SECRET);
 
         req.user = decode;
 
