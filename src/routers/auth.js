@@ -74,7 +74,7 @@ authRouter.post('/login', async (req , res) => {
         )
 
         res.cookie('token', token , {
-            maxAge: '7d'
+            maxAge: 7 * 24 * 60 * 60 * 1000
         })
 
         res.send({

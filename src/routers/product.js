@@ -4,14 +4,14 @@ const { Product } = require('../model/product.js')
 const productRouter = express.Router();
 
 
-productRouter.post('/add' , async (req , res) => {
+productRouter.post('/add', async (req, res) => {
     try {
         let { name, description, price } = req.body;
         price = price?.trim() === "" ? NaN : Number(price)
         console.log(name, description, price)
 
         if (!name || !description || isNaN(price) || price < 0) {
-            res.status(400).send({ 
+            res.status(400).send({
                 ok: true,
                 message: "Invalid product details!"
             });
@@ -40,7 +40,7 @@ productRouter.post('/add' , async (req , res) => {
     }
 });
 
-productRouter.get('/all' , async (req , res)=>{
+productRouter.get('/all', async (req, res) => {
     try {
         let allProducts = await Product.find();
         res.status(200).send({
@@ -56,7 +56,7 @@ productRouter.get('/all' , async (req , res)=>{
     }
 });
 
-productRouter.get('/:id' , async (req , res) => {
+productRouter.get('/:id', async (req, res) => {
     try {
         let id = req.params.id;
         let product = await Product.findById(id);
@@ -68,7 +68,7 @@ productRouter.get('/:id' , async (req , res) => {
             });
             return
         }
-        
+
         res.send({
             ok: true,
             message: 'Your asked product has send.',
@@ -82,7 +82,7 @@ productRouter.get('/:id' , async (req , res) => {
     }
 });
 
-productRouter.put('/update/:id' , async (req , res) => {
+productRouter.put('/update/:id', async (req, res) => {
     try {
         let id = req.params.id;
         let updates = req.body;
@@ -91,29 +91,37 @@ productRouter.put('/update/:id' , async (req , res) => {
             res.send({
                 ok: false,
                 message: 'You did not update anything.'
-            })
-        }
-
-        if (updates.price && !(typeof updates.price === Number)) {
-            let { price } = updates;
-            price = price.trim() === "" ? NaN : Number(price);
-            updates.price = price;
-            console.log(price)
-        }
-
-
-        if (updates.price < 0 || isNaN(updates.price)) {
-            res.send({
-                ok: false,
-                message: 'product price is inavalid!'
             });
-            return;
+            return
         }
-        
-        let updateAble = ['name' , 'description' , 'price'];
-        
+
+        if (!(updates.price === undefined)) {
+            let { price } = updates;
+
+            if (!(typeof updates.price === Number)) {
+                price = price.trim() === "" ? NaN : Number(price);
+            }
+
+            if (updates.price < 0 || isNaN(updates.price)) {
+                res.send({
+                    ok: false,
+                    message: 'product price is invalid!'
+                });
+                return;
+            }
+
+            updates.price = price
+
+        }
+
+
+
+
+
+        let updateAble = ['name', 'description', 'price'];
+
         let isUpdateAble = Object.keys(updates).every(key => updateAble.includes(key));
-        
+
         if (!isUpdateAble) {
             res.send({
                 ok: false,
@@ -121,13 +129,13 @@ productRouter.put('/update/:id' , async (req , res) => {
             });
             return
         }
-        
-        let product = await Product.findByIdAndUpdate(id , updates , {
+
+        let product = await Product.findByIdAndUpdate(id, updates, {
             new: true,
             returnDocument: 'after',
             runValidators: true
         });
-        
+
         if (!product) {
             res.send({
                 ok: false,
@@ -144,7 +152,7 @@ productRouter.put('/update/:id' , async (req , res) => {
 
 
     } catch (error) {
-        
+
         res.status(500).send({
             ok: false,
             message: error.message
@@ -153,7 +161,7 @@ productRouter.put('/update/:id' , async (req , res) => {
     }
 })
 
-productRouter.delete('/delete/:id' , async (req , res) => {
+productRouter.delete('/delete/:id', async (req, res) => {
     try {
         let id = req.params.id;
 
@@ -161,7 +169,7 @@ productRouter.delete('/delete/:id' , async (req , res) => {
 
         if (!deletedProduct) {
             res.send({
-                ok: false, 
+                ok: false,
                 message: 'Product not found'
             });
             return
@@ -172,7 +180,7 @@ productRouter.delete('/delete/:id' , async (req , res) => {
             message: 'Product has successfully deleted',
             product: deletedProduct
         })
-        
+
     } catch (error) {
 
         res.status(500).send({

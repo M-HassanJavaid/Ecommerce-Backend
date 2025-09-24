@@ -7,7 +7,7 @@ const userRouter = express.Router();
 userRouter.get('/profile' , checkAuth , async (req , res) => {
     try {
         let id = req.user.id;
-        let user = User.findById(id);
+        let user = await User.findById(id);
         if (!user) {
             res.status(404).send({
                 ok: false,
