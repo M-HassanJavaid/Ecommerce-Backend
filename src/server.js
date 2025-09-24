@@ -6,24 +6,27 @@ dotenv.config()
 const PORT = process.env.PORT || 3000;
 const { connectToDb } = require('./config/db.js')
 
-//Route handlers
-const { signup } = require('./routeHandlers/signup.js')
-const { login } = require('./routeHandlers/login.js')
-const { addProduct } = require('./routeHandlers/addProduct.js')
+//Routers 
+const { authRouter } = require('./routers/auth.js');
+const { productRouter } = require('./routers/product.js')
+const { userRouter } = require('./routers/user.js')
+
 
 // Middleware
 app.use(express.json());
 app.use(cookeParser());
+
+// Routers API
+app.use('/auth' , authRouter);
+app.use('/product', productRouter);
+app.use('/user' , userRouter)
+
 
 
 // Routes
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
 });
-
-app.post('/signup' , signup);
-app.post('/login' , login);
-app.post('/addProduct' , addProduct);
 
 // Start server
 
